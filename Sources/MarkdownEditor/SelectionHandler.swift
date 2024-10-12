@@ -17,7 +17,7 @@ public struct SelectionHandler {
     ///   - selection: The `TextSelection?` representing either a text range or insertion point.
     ///
     /// - Returns: The new `TextSelection` reflecting changes after applying the command.
-    public func handleSelection(command: some MarkdownCommand, text: inout String, selection: TextSelection?) -> TextSelection? {
+    public static func handleSelection(command: some MarkdownCommand, text: inout String, selection: TextSelection?) -> TextSelection? {
         guard let selection else { return nil }
 
         switch selection.indices {

@@ -21,21 +21,6 @@ public struct MarkdownEditorView: View {
 
     public var body: some View {
         TextEditor(text: $text, selection: $selection)
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Button {
-                        let newContent = selectionHandler.handleSelection(command: BoldCommand(), text: &text, selection: selection)
-                        print(newContent)
-                    } label: {
-                        Label(
-                            title: { Text("bold") },
-                            icon: { Image(systemName: "bold") }
-                        )
-                    }
-
-                }
-            }
-            .background(Color.red)
     }
 }
 
