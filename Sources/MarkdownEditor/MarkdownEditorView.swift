@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(iOS 18.0, *)
 public struct MarkdownEditorView: View {
     @Binding var text: String
     @Binding var selection: TextSelection?
@@ -38,6 +39,7 @@ public struct MarkdownEditorView: View {
     }
 }
 
+@available(iOS 18.0, *)
 #Preview {
     @Previewable @State
     var string: String = ""

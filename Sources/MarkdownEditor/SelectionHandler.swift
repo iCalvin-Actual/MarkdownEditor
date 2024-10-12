@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(iOS 18.0, *)
 public struct SelectionHandler {
     /// Handles applying a markdown command to a selection or insertion point.
     ///
