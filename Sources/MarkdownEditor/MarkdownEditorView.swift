@@ -54,10 +54,10 @@ public struct MarkdownEditorView<C: View>: View {
 }
 
 @available(iOS 18.0, *)
-struct StandardToolber: View {
+public struct StandardToolber: View {
     let action: () -> Void
     
-    var body: some View {
+    public var body: some View {
         Button(action: action, label: {
             Label {
                 Text("formatting")
