@@ -33,13 +33,10 @@ Basic usage
 ```
 import MarkdownEditor
 
-@State
-var text: String
+struct myView: View {
+  @State var text: String
+  @State var textSelection: TextSelection?
 
-@State
-var textSelection: TextSelection?
-
-struct myView: View { 
   var body: some View {
     MarkdownEditor<StandardToolbar>(text: $text, selection: $selection)
   }
