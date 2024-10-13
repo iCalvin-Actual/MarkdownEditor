@@ -31,10 +31,6 @@ public struct MarkdownEditorView<C: View>: View {
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     appropriateToolbar
-                        .popover(isPresented: $showFormatting, attachmentAnchor: .point(.topLeading)) {
-                            FormattingSheet(string: $text, selection: $selection)
-                                .presentationCompactAdaptation(.popover)
-                        }
                 }
             }
     }
@@ -44,25 +40,49 @@ public struct MarkdownEditorView<C: View>: View {
         if let toolbarBuilder {
             toolbarBuilder()
         } else {
-            StandardToolber(action: {
+            StandardToolbar(toggleSheet: {
                 withAnimation {
                     showFormatting.toggle()
                 }
+            }, toggleBold: {
+                let nextSelection = SelectionHandler.handleSelection(command: BoldCommand(), text: &text, selection: selection)
+                selection = nextSelection
             })
+            .popover(isPresented: $showFormatting, attachmentAnchor: .point(.topLeading)) {
+                FormattingSheet(string: $text, selection: $selection)
+                    .presentationCompactAdaptation(.popover)
+            }
         }
     }
 }
 
 @available(iOS 18.0, *)
-public struct StandardToolber: View {
-    let action: () -> Void
+public struct StandardToolbar: View {
+    let toggleSheet: () -> Void
+    let toggleBold: () -> Void
+    let toggleItalic: () -> Void
+    let toggleStrike: () -> Void
+    
+    init(toggleSheet: @escaping () -> Void = { }, toggleBold: @escaping () -> Void = { }, toggleItalic: @escaping () -> Void = { }, toggleStrike: @escaping () -> Void = { }) {
+        self.toggleSheet = toggleSheet
+        self.toggleBold = toggleBold
+        self.toggleItalic = toggleItalic
+        self.toggleStrike = toggleStrike
+    }
     
     public var body: some View {
-        Button(action: action, label: {
+        Button(action: toggleSheet, label: {
             Label {
                 Text("formatting")
             } icon: {
                 Image(systemName: "textformat")
+            }
+        })
+        Button(action: toggleBold, label: {
+            Label {
+                Text("bold")
+            } icon: {
+                Image(systemName: "bold")
             }
         })
     }
@@ -74,6 +94,6 @@ public struct StandardToolber: View {
     var string: String = ""
     @Previewable @State
     var selection: TextSelection?
-    MarkdownEditorView<StandardToolber>(text: $string, selection: $selection)
+    MarkdownEditorView<StandardToolbar>(text: $string, selection: $selection)
 }
 
