@@ -82,8 +82,8 @@ extension MarkdownCommand {
         // Check if we're inside a n existing marker (e.g., "****")
         if content.count >= startLength + endLength {
             if content.distance(from: content.startIndex, to: insertionPoint) >= startLength && content.distance(from: insertionPoint, to: content.endIndex) >= endLength {
-                let startCheck = content.index(insertionPoint, offsetBy: -min(startLength, content.distance(from: content.startIndex, to: insertionPoint)))
-                let endCheck = content.index(insertionPoint, offsetBy: min(endLength, content.distance(from: insertionPoint, to: content.endIndex)))
+                let startCheck = content.index(insertionPoint, offsetBy: -startLength)
+                let endCheck = content.index(insertionPoint, offsetBy: startLength)
 
                 if content[startCheck..<insertionPoint] == startMarker, content[insertionPoint..<endCheck] == endMarker {
                     // Remove surrounding markers
