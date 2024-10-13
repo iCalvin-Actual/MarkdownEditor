@@ -24,7 +24,7 @@ public struct SelectionHandler {
         case .selection(let range):
             if selection.isInsertion {
                 let newInsertionPoint = command.apply(to: range.lowerBound, in: &text)
-                return TextSelection(range: .init(uncheckedBounds: (lower: newInsertionPoint, upper: newInsertionPoint)))
+                return TextSelection(range: newInsertionPoint)
             }
             let newRange = command.apply(to: range, in: &text)
             return TextSelection(range: newRange)
@@ -34,7 +34,7 @@ public struct SelectionHandler {
             ranges.ranges.sorted(by: { $0.upperBound > $1.lowerBound }).forEach { range in
                 if selection.isInsertion {
                     let newInsertion = command.apply(to: range.lowerBound, in: &text)
-                    newRanges.insert(contentsOf: Range(uncheckedBounds: (lower: newInsertion, upper: newInsertion)))
+                    newRanges.insert(contentsOf: newInsertion)
                 } else {
                     newRanges.insert(contentsOf: command.apply(to: range, in: &text))
                 }
