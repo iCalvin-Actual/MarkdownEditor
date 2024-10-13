@@ -79,16 +79,13 @@ extension MarkdownCommand {
         var newInsertion = insertionPoint
         var removed = false
 
-        // Check if we're inside a n existing marker (e.g., "****")
         if content.count >= startLength + endLength {
             if content.distance(from: content.startIndex, to: insertionPoint) >= startLength && content.distance(from: insertionPoint, to: content.endIndex) >= endLength {
                 let startCheck = content.index(insertionPoint, offsetBy: -startLength)
                 let endCheck = content.index(insertionPoint, offsetBy: startLength)
 
-                if content[startCheck..<insertionPoint] == startMarker, content[insertionPoint..<endCheck] == endMarker {
-                    // Remove surrounding markers
-                    content.removeSubrange(insertionPoint..<endCheck)
-                    content.removeSubrange(startCheck..<insertionPoint)
+                if content[startCheck..<endCheck] == startMarker+endMarker {
+                    content.removeSubrange(startCheck..<endCheck)
                     newInsertion = startCheck
                     removed = true
                 }
