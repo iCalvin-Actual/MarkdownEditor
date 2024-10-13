@@ -52,8 +52,8 @@ public struct MarkdownEditorView<C: View>: View {
                 apply(command: StrikeCommand())
             })
             .popover(isPresented: $showFormatting, attachmentAnchor: .point(.topLeading)) {
-                FormattingSheet(string: $text, selection: $selection)
-                    .presentationCompactAdaptation(.popover)
+//                FormattingSheet(string: $text, selection: $selection)
+//                    .presentationCompactAdaptation(.popover)
             }
         }
     }
