@@ -48,10 +48,27 @@ import Testing
     }
 }
 
-@Test func applyBoldBlockText() async throws {
+@Test func applyBoldBlockInsertionPoinotText() async throws {
+    let targetString = "targetString"
+    let resultString = "****\(targetString)"
+    var largerText: String = """
+    # some text
+
+    \(targetString)
+
+    moreText
+    """
+    guard let targetRange = largerText.firstRange(of: targetString) else { return }
+    let targetIndex = targetRange.lowerBound
+    let rangeBeta = BoldCommand().apply(to: targetIndex, in: &largerText)
+    guard let found = largerText.firstRange(of: resultString) else { return }
+    #expect(largerText.index(found.lowerBound, offsetBy: 2) == rangeBeta.upperBound)
+    #expect(rangeBeta.upperBound == rangeBeta.lowerBound)
+}
+
+@Test func applyBoldBlockInsertionPointText() async throws {
     let targetString = "targetString"
     let resultString = "**\(targetString)**"
-    let testCount = BoldCommand().startMarker.count * 2
     var largerText: String = """
     # some text
 
@@ -65,6 +82,25 @@ import Testing
     #expect(rangeBeta.lowerBound == found.lowerBound)
     #expect(rangeBeta.upperBound == found.upperBound)
 }
+
+@Test func applyBoldBlockText() async throws {
+    let targetString = "targetString"
+    let resultString = "**\(targetString)**"
+    var largerText: String = """
+    # some text
+
+    \(targetString)
+
+    moreText
+    """
+    guard let targetRange = largerText.firstRange(of: targetString) else { return }
+    let rangeBeta = BoldCommand().apply(to: targetRange.lowerBound..<targetRange.upperBound, in: &largerText)
+    guard let found = largerText.firstRange(of: resultString) else { return }
+    print("Success")
+    #expect(rangeBeta.lowerBound == found.lowerBound)
+    #expect(rangeBeta.upperBound == found.upperBound)
+}
+
 
 @Test func applyBoldBlockPartiallyBoldText() async throws {
     let targetString = "targetString"
@@ -94,4 +130,16 @@ import Testing
         }
         print(largerText)
     }
+}
+
+@Test func extremeTest() async throws {
+    let testString = "{profile-picture}\r\n\r\n# Calvin\r\n\r\n| Pronouns: He/They\r\n| Gender: Non-Binary {venus-mars}\r\n| Occupation: Engineer\r\n| Location: Salem, MA\r\n\r\n---\r\n\r\n--- Bio ---\r\n\r\nWitchy person about town. I’m a Scorpio, sorry if that’s a red flag.\r\n\r\n[What am I doing /now?](/now)\r\n\r\n\r\n--- Contact ---\r\n\r\n#### Stuff I Make\r\n\r\n- [app.lol @ App Store](https://app.url.lol/gimme)\r\n- [Photos @ Glass](https://glass.photo/calvin-chestnut)\r\n- [Videos @ TikTok](https://www.tiktok.com/@calvin_ccb)\r\n- [Selfies @ Snap](https://t.snapchat.com/gso7jT8h)\r\n\r\n\r\n--- Hobbies ---\r\n\r\n#### Hobbies\r\n\r\n- Photography {camera}\r\n- Skateboarding {heart-pulse}\r\n- App Development {mobile}\r\n- Dungeons & Dragons {dice}\r\n- So Much Cannabis {cannabis}"
+    var stringA = testString
+    var stringB = testString
+    guard let scorpioRange = testString.range(of: "Scorpio") else {
+        return
+    }
+    let resultA = BoldCommand().apply(to: scorpioRange.lowerBound, in: &stringA)
+    let resultB = BoldCommand().apply(to: scorpioRange, in: &stringB)
+    print("Check")
 }

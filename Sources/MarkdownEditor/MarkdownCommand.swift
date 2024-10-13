@@ -76,23 +76,31 @@ extension MarkdownCommand {
     public func apply(to insertionPoint: String.Index, in content: inout String) -> Range<String.Index> {
         let startLength = startMarker.count
         let endLength = endMarker.count
+        var newInsertion = insertionPoint
+        var removed = false
 
-        // Check if we're inside an existing marker (e.g., "****")
-        let startCheck = content.index(insertionPoint, offsetBy: -min(startLength, content.distance(from: content.startIndex, to: insertionPoint)))
-        let endCheck = content.index(insertionPoint, offsetBy: min(endLength, content.distance(from: insertionPoint, to: content.endIndex)))
+        // Check if we're inside a n existing marker (e.g., "****")
+        if content.count >= startLength + endLength {
+            if content.distance(from: content.startIndex, to: insertionPoint) >= startLength && content.distance(from: insertionPoint, to: content.endIndex) >= endLength {
+                let startCheck = content.index(insertionPoint, offsetBy: -min(startLength, content.distance(from: content.startIndex, to: insertionPoint)))
+                let endCheck = content.index(insertionPoint, offsetBy: min(endLength, content.distance(from: insertionPoint, to: content.endIndex)))
 
-        if content[startCheck..<insertionPoint] == startMarker, content[insertionPoint..<endCheck] == endMarker {
-            // Remove surrounding markers
-            content.removeSubrange(insertionPoint..<endCheck)
-            content.removeSubrange(startCheck..<insertionPoint)
-            return .init(uncheckedBounds: (startCheck, startCheck))
-        } else {
+                if content[startCheck..<insertionPoint] == startMarker, content[insertionPoint..<endCheck] == endMarker {
+                    // Remove surrounding markers
+                    content.removeSubrange(insertionPoint..<endCheck)
+                    content.removeSubrange(startCheck..<insertionPoint)
+                    newInsertion = startCheck
+                    removed = true
+                }
+            }
+        }
+        if !removed {
             // Apply markers
             content.insert(contentsOf: startMarker, at: insertionPoint)
             content.insert(contentsOf: endMarker, at: content.index(insertionPoint, offsetBy: startLength))
             // Return the insertion point after the start marker
-            let insertion = content.index(insertionPoint, offsetBy: startLength)
-            return .init(uncheckedBounds: (insertion, insertion))
+            newInsertion = content.index(insertionPoint, offsetBy: startLength)
         }
+        return newInsertion..<newInsertion
     }
 }
