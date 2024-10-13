@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import MarkdownEditor
 
@@ -27,11 +28,12 @@ import Testing
 }
 
 @Test func testApplyBoldBoldedText() async throws {
-    for i in 0...2 {
-        var targetText: String = "Hello, World!"
+    let targetText: String = "Hello, World!"
+    let testCount = Int(floor(Double(targetText.count) / 2))
+    for i in 0..<testCount {
         var boldedText: String = "**\(targetText)**"
         let rangeBeta = BoldCommand().apply(to: boldedText.index(boldedText.startIndex, offsetBy: i)..<boldedText.index(boldedText.endIndex, offsetBy: -i), in: &boldedText)
-        if i < 2 {
+        if i <= 2 {
             #expect(rangeBeta.lowerBound == boldedText.startIndex)
             #expect(rangeBeta.upperBound == boldedText.endIndex)
             #expect(boldedText == targetText)
@@ -42,33 +44,54 @@ import Testing
             #expect(boldedText.hasSuffix("**"))
             #expect(!boldedText.contains(targetText))
         }
+        print(boldedText)
     }
 }
 
 @Test func applyBoldBlockText() async throws {
+    let targetString = "targetString"
+    let resultString = "**\(targetString)**"
+    let testCount = BoldCommand().startMarker.count * 2
     var largerText: String = """
-# some text
+    # some text
 
-targetString
+    \(targetString)
 
-moreText
-"""
-    guard let range = largerText.range(of: "targetString") else {
-        return
-    }
-    let resultRange = BoldCommand().apply(to: range, in: &largerText)
+    moreText
+    """
+    guard let targetRange = largerText.firstRange(of: targetString) else { return }
+    let rangeBeta = BoldCommand().apply(to: targetRange.lowerBound..<targetRange.upperBound, in: &largerText)
+    guard let found = largerText.firstRange(of: resultString) else { return }
+    #expect(rangeBeta.lowerBound == found.lowerBound)
+    #expect(rangeBeta.upperBound == found.upperBound)
 }
 
-@Test func applyBoldBlockPartiallyBoldedText() async throws {
-    var largerBold: String = """
-# some text
-
-**targetString**
-
-moreText
-"""
-    guard let range = largerBold.range(of: "targetString") else {
-        return
+@Test func applyBoldBlockPartiallyBoldText() async throws {
+    let targetString = "targetString"
+    let resultString = "**\(targetString)**"
+    let testCount = Int(floor(Double(targetString.count) / 2))
+    for i in 0..<testCount {
+        var largerText: String = """
+        # some text
+        
+        \(resultString)
+        
+        moreText
+        """
+        guard let targetRange = largerText.firstRange(of: targetString) else { continue }
+        let rangeBeta = BoldCommand().apply(to: largerText.index(targetRange.lowerBound, offsetBy: i)..<largerText.index(targetRange.upperBound, offsetBy: -i), in: &largerText)
+        if i <= 2 {
+            guard let found = largerText.firstRange(of: targetString) else { return }
+            #expect(rangeBeta.lowerBound == found.lowerBound)
+            #expect(rangeBeta.upperBound == found.upperBound)
+            #expect(!largerText.contains(resultString))
+        } else {
+            #expect(rangeBeta.lowerBound != largerText.startIndex)
+            #expect(rangeBeta.upperBound != largerText.endIndex)
+            #expect(largerText[rangeBeta].hasPrefix("**"))
+            #expect(largerText[rangeBeta].hasSuffix("**"))
+            #expect(!largerText.contains(targetString))
+        }
+        print(largerText)
     }
-    let resultRange = BoldCommand().apply(to: range, in: &largerBold)
 }

@@ -29,7 +29,7 @@ extension MarkdownCommand {
         if endLength > 0 {
             var removed = false
             if content.count >= endLength + startLength {
-                for index in 0..<endLength {
+                for index in 0...endLength {
                     let actingLower = content.index(actingUpperLimit, offsetBy: -(endLength - index))
                     let distanceToEnd = content.distance(from: actingLower, to: content.endIndex)
                     guard distanceToEnd >= endLength, !removed else { continue }
@@ -50,7 +50,7 @@ extension MarkdownCommand {
         if startLength > 0 {
             var removed = false
             if content.count >= endLength + startLength {
-                for index in 0..<startLength {
+                for index in 0...startLength {
                     guard content.distance(from: content.startIndex, to: actingLowerLimit) >= index, !removed else { continue }
                     let actingLower = content.index(actingLowerLimit, offsetBy: -index)
                     guard content.distance(from: actingLower, to: content.endIndex) >= startLength else { continue }
