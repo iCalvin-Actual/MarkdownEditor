@@ -8,19 +8,19 @@
 import SwiftUI
 
 @available(iOS 18.0, *)
-public struct MarkdownEditorView<C: View>: View {
+public struct MarkdownEditor<T: View>: View {
     @Binding var text: String
     @Binding var selection: TextSelection?
     
     @ViewBuilder
-    let toolbarBuilder: (() -> C)?
+    let toolbarBuilder: (() -> T)?
     
     let selectionHandler: SelectionHandler = .init()
     
     @State
     private var showFormatting: Bool = false
 
-    public init(text: Binding<String>, selection: Binding<TextSelection?>, toolbarBuilder: (() -> C)? = nil) {
+    public init(text: Binding<String>, selection: Binding<TextSelection?>, toolbarBuilder: (() -> T)? = nil) {
         self._text = text
         self._selection = selection
         self.toolbarBuilder = toolbarBuilder
@@ -117,6 +117,6 @@ public struct StandardToolbar: View {
     var string: String = ""
     @Previewable @State
     var selection: TextSelection?
-    MarkdownEditorView<StandardToolbar>(text: $string, selection: $selection)
+    MarkdownEditor<StandardToolbar>(text: $string, selection: $selection)
 }
 
