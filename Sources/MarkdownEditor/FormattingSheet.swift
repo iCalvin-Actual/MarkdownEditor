@@ -41,7 +41,7 @@ public struct FormattingSheet: View {
                     }
                 }
                 Button {
-                    let nextSelection = SelectionHandler.handleSelection(command: Striketrhgouh(), text: &string, selection: selection)
+                    let nextSelection = SelectionHandler.handleSelection(command: StrikeCommand(), text: &string, selection: selection)
                     selection = nextSelection
                 } label: {
                     Label {

@@ -45,14 +45,22 @@ public struct MarkdownEditorView<C: View>: View {
                     showFormatting.toggle()
                 }
             }, toggleBold: {
-                let nextSelection = SelectionHandler.handleSelection(command: BoldCommand(), text: &text, selection: selection)
-                selection = nextSelection
+                apply(command: BoldCommand())
+            }, toggleItalic: {
+                apply(command: ItalicCommand())
+            }, toggleStrike: {
+                apply(command: StrikeCommand())
             })
             .popover(isPresented: $showFormatting, attachmentAnchor: .point(.topLeading)) {
                 FormattingSheet(string: $text, selection: $selection)
                     .presentationCompactAdaptation(.popover)
             }
         }
+    }
+    
+    func apply(command: MarkdownCommand) {
+        let nextSelection = SelectionHandler.handleSelection(command: command, text: &text, selection: selection)
+        selection = nextSelection
     }
 }
 
@@ -71,18 +79,33 @@ public struct StandardToolbar: View {
     }
     
     public var body: some View {
-        Button(action: toggleSheet, label: {
-            Label {
-                Text("formatting")
-            } icon: {
-                Image(systemName: "textformat")
-            }
-        })
+// Add back when ready for Headings
+//        Button(action: toggleSheet, label: {
+//            Label {
+//                Text("formatting")
+//            } icon: {
+//                Image(systemName: "textformat")
+//            }
+//        })
         Button(action: toggleBold, label: {
             Label {
                 Text("bold")
             } icon: {
                 Image(systemName: "bold")
+            }
+        })
+        Button(action: toggleItalic, label: {
+            Label {
+                Text("italic")
+            } icon: {
+                Image(systemName: "italic")
+            }
+        })
+        Button(action: toggleStrike, label: {
+            Label {
+                Text("strike")
+            } icon: {
+                Image(systemName: "strikethrough")
             }
         })
     }

@@ -27,7 +27,7 @@ public struct ItalicCommand: MarkdownCommand {
     public init() {}
 }
 
-public struct Striketrhgouh: MarkdownCommand {
+public struct StrikeCommand: MarkdownCommand {
     public let startMarker = "~"
     public let endMarker = "~"
     
