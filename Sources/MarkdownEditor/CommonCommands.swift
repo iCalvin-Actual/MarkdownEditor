@@ -8,12 +8,6 @@
 import Foundation
 
 public struct BoldCommand: MarkdownCommand {
-    public let startMarker = "*"
-    public let endMarker = "*"
-    
-    public init() {}
-}
-public struct StrongCommand: MarkdownCommand {
     public let startMarker = "**"
     public let endMarker = "**"
     
@@ -28,8 +22,8 @@ public struct ItalicCommand: MarkdownCommand {
 }
 
 public struct StrikeCommand: MarkdownCommand {
-    public let startMarker = "~"
-    public let endMarker = "~"
+    public let startMarker = "~~"
+    public let endMarker = "~~"
     
     public init() {}
 }
