@@ -95,7 +95,6 @@ public struct StandardToolbar: View {
                 Image(systemName: "bold")
             }
         })
-        .foregroundStyle(Color.primary)
         Button(action: toggleItalic, label: {
             Label {
                 Text("italic")
@@ -103,7 +102,6 @@ public struct StandardToolbar: View {
                 Image(systemName: "italic")
             }
         })
-        .foregroundStyle(Color.primary)
         Button(action: toggleStrike, label: {
             Label {
                 Text("strike")
@@ -111,7 +109,6 @@ public struct StandardToolbar: View {
                 Image(systemName: "strikethrough")
             }
         })
-        .foregroundStyle(Color.primary)
     }
 }
 
