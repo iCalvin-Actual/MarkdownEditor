@@ -24,6 +24,7 @@ public struct MarkdownEditor<T: View>: View {
         self._text = text
         self._selection = selection
         self.toolbarBuilder = toolbarBuilder
+        self.selection = .init(insertionPoint: text.wrappedValue.startIndex)
     }
 
     public var body: some View {
