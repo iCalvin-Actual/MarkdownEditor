@@ -26,20 +26,70 @@ public struct SelectionHandler {
                 let newInsertionPoint = command.apply(to: range.lowerBound, in: &text)
                 return TextSelection(range: newInsertionPoint)
             }
-            let newRange = command.apply(to: range, in: &text)
-            return TextSelection(range: newRange)
+            let rangeString = text[range]
+            let splitRanges: [Substring] = rangeString.split(whereSeparator: \.isNewline).reduce([Substring]()) { partialResult, nextItem in
+                guard nextItem.count > 0 else {
+                    return partialResult
+                }
+                return partialResult + [nextItem]
+            }
+            var actingInsertionPoint = range.lowerBound
+            let newRanges: RangeSet<String.Index> = splitRanges.enumerated().reduce(.init()) { partialResult, item in
+                let subString = item.element
+                let startIndex = actingInsertionPoint
+                if let newRange = text.range(of: subString, range: startIndex..<range.upperBound) {
+                    let nextIndex = splitRanges.index(after: item.offset)
+                    
+                    if item.offset < splitRanges.index(splitRanges.endIndex, offsetBy: -1) {
+                        let nextItem = splitRanges[nextIndex]
+                        let nextRange = text.range(of: nextItem, range: newRange.upperBound..<text.endIndex)
+                        actingInsertionPoint = nextRange?.lowerBound ?? newRange.upperBound
+                    }
+                    return partialResult.union(RangeSet(newRange))
+                }
+                return partialResult
+            }
+            var actingOffset: Int = 0
+            let sortedRanges: [Range<String.Index>] = newRanges.ranges
+            .map { range in
+                let newLength = text.distance(from: range.lowerBound, to: range.upperBound)
+                let newLower = text.index(range.lowerBound, offsetBy: actingOffset)
+                var newUpper = text.index(newLower, offsetBy: newLength)
+                if newUpper > text.endIndex {
+                    newUpper = text.endIndex
+                }
+                let newRange = newLower..<newUpper
+                actingOffset += command.endMarker.count + command.startMarker.count
+                let result = command.apply(to: newRange, in: &text)
+                return result
+            }
+            let returnSelection = TextSelection(ranges: RangeSet(sortedRanges))
+            return returnSelection
 
         case .multiSelection(let ranges):
-            var newRanges: RangeSet<String.Index> = .init()
-            ranges.ranges.sorted(by: { $0.upperBound > $1.lowerBound }).forEach { range in
-                if selection.isInsertion {
-                    let newInsertion = command.apply(to: range.lowerBound, in: &text)
-                    newRanges.insert(contentsOf: newInsertion)
-                } else {
-                    newRanges.insert(contentsOf: command.apply(to: range, in: &text))
-                }
-            }
-            return TextSelection(ranges: newRanges)
+            let newRanges = ranges.ranges
+                .sorted(by: { $0.upperBound > $1.lowerBound })
+                .reduce(RangeSet<String.Index>(), { partialResult, selection in
+                    let rangeString = text[selection]
+                    var actingInsertionPoint = selection.lowerBound
+                    let splitRanges: [Substring] = rangeString.split(whereSeparator: \.isNewline).reduce([Substring]()) { partialResult, nextItem in
+                        guard nextItem.count > 0 else {
+                            return partialResult
+                        }
+                        return partialResult + [nextItem]
+                    }
+                    let newRanges: RangeSet<String.Index> = splitRanges.reduce(.init()) { innerResult, subString in
+                        let startIndex = actingInsertionPoint
+                        if let newRange = text.range(of: subString, range: startIndex..<selection.upperBound) {
+                            actingInsertionPoint = newRange.upperBound
+                            return innerResult.union(RangeSet(newRange))
+                        }
+                        return innerResult
+                    }
+                    return partialResult.union(newRanges)
+                })
+                .ranges.map { command.apply(to: $0, in: &text) }
+            return TextSelection(ranges: RangeSet(newRanges))
 
         @unknown default:
             return nil

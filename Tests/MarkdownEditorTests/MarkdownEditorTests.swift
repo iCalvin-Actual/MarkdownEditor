@@ -44,7 +44,6 @@ import Testing
             #expect(boldedText.hasSuffix("**"))
             #expect(!boldedText.contains(targetText))
         }
-        print(boldedText)
     }
 }
 
@@ -128,8 +127,44 @@ import Testing
             #expect(largerText[rangeBeta].hasSuffix("**"))
             #expect(!largerText.contains(targetString))
         }
-        print(largerText)
     }
+}
+
+@available(iOS 18.0, *)
+@Test func multiParagraphTest() async throws {
+    var testString = """
+abcd
+
+efghi
+
+jklmno
+"""
+    let expected = """
+ab**cd**
+
+**efghi**
+
+**jk**lmno
+"""
+    let findingA = "**cd**"
+    let findingB = "**jk**"
+    guard let testingA = testString.firstRange(of: "cd"),
+          let testingC = testString.firstRange(of: "jk"),
+          let expectedA = expected.firstRange(of: "**cd**"),
+          let expectedC = expected.firstRange(of: "**jk**")else {
+        return
+    }
+    let testingRange = testingA.lowerBound..<testingC.upperBound
+    let selections = SelectionHandler.handleSelection(command: BoldCommand(), text: &testString, selection: .init(range: testingRange))
+    guard case .multiSelection(let ranges) = selections?.indices else {
+        return
+    }
+    let resultRange = ranges.ranges.first
+    let foundA = testString.range(of: findingA)
+    let foundB = testString.range(of: findingB)
+    #expect(expected == testString)
+    #expect(foundA?.lowerBound == expectedA.lowerBound)
+    #expect(foundB?.upperBound == expectedC.upperBound)
 }
 
 @Test func extremeTest() async throws {
