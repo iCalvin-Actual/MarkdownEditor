@@ -130,7 +130,7 @@ import Testing
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 @Test func multiParagraphTest() async throws {
     var testString = """
 abcd

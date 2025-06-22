@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 public struct MarkdownEditor<T: View>: View {
     @Binding var text: String
     @Binding var selection: TextSelection?
@@ -64,7 +64,7 @@ public struct MarkdownEditor<T: View>: View {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 public struct StandardToolbar: View {
     let toggleSheet: () -> Void
     let toggleBold: () -> Void
@@ -111,7 +111,7 @@ public struct StandardToolbar: View {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 #Preview {
     @Previewable @State
     var string: String = ""
