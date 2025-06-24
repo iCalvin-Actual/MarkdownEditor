@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#if !(os(watchOS) || os(tvOS))
 @available(iOS 18.0, macOS 15.0, *)
 public struct MarkdownEditor<T: View>: View {
     @Binding var text: String
@@ -29,9 +30,11 @@ public struct MarkdownEditor<T: View>: View {
     public var body: some View {
         TextEditor(text: $text, selection: $selection)
             .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    appropriateToolbar
-                }
+                #if !(os(visionOS) || os(watchOS) || tvOS)
+                    ToolbarItemGroup(placement: .keyboard) {
+                        appropriateToolbar
+                    }
+                #endif
             }
     }
     
@@ -119,4 +122,5 @@ public struct StandardToolbar: View {
     var selection: TextSelection?
     MarkdownEditor<StandardToolbar>(text: $string, selection: $selection)
 }
+#endif
 
